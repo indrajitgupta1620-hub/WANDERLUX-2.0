@@ -147,19 +147,23 @@ def run_automated_ticket_booking():
         time.sleep(1)
 
         # Click 'Proceed to Payment'
-        proceed_to_pay_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Proceed to Payment')]")))
-        proceed_to_pay_btn.click()
-        time.sleep(1)
+        proceed_to_pay_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[contains(., 'Proceed to Payment')]")))
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", proceed_to_pay_btn)
+        time.sleep(0.5)
+        driver.execute_script("arguments[0].click();", proceed_to_pay_btn)
+        time.sleep(1.5)
 
         # --------------------------------------------------------------------
         # STEP 6: PAYMENT CHECKOUT SIMULATION
         # --------------------------------------------------------------------
         print("\n[STEP 6/7] Completing Instant UPI Payment simulation...")
         
-        # Click 'Pay & Confirm Booking' button
-        pay_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Pay') and contains(text(), 'Confirm')]")))
-        print(f"• Executing Payment: {pay_btn.text}")
-        pay_btn.click()
+        # Click 'Pay & Confirm Booking' button (using '.' to handle concatenated React text nodes)
+        pay_btn = wait.until(EC.presence_of_element_located((By.XPATH, "//button[contains(., 'Confirm Booking')]")))
+        print(f"• Executing Payment: {pay_btn.text.replace(chr(10), ' ')}")
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", pay_btn)
+        time.sleep(0.5)
+        driver.execute_script("arguments[0].click();", pay_btn)
 
         # --------------------------------------------------------------------
         # STEP 7: VERIFY CONFIRMED E-TICKET & PNR CODE
@@ -167,10 +171,11 @@ def run_automated_ticket_booking():
         print("\n[STEP 7/7] Verifying generated E-Ticket & PNR Number...")
         
         # Wait for confirmation screen
-        wait.until(EC.visibility_of_element_located((By.XPATH, "//h2[contains(text(), 'Successfully Confirmed')]")))
+        wait.until(EC.visibility_of_element_located((By.XPATH, "//*[contains(., 'Booking Successfully Confirmed')]")))
+        time.sleep(1)
         
         # Extract PNR Code element
-        pnr_element = wait.until(EC.visibility_of_element_located((By.XPATH, "//span[contains(text(), 'PNR NUMBER')]/following-sibling::div")))
+        pnr_element = wait.until(EC.visibility_of_element_located((By.XPATH, "//span[contains(., 'PNR NUMBER')]/following-sibling::div")))
         generated_pnr = pnr_element.text.strip()
 
         print("\n" + "=" * 65)
