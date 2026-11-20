@@ -1,12 +1,4 @@
-"""
-================================================================================
-SYLLABUS MODULE 3 & 4 DEMONSTRATION:
-1. Locators: ID, NAME, CSS, XPATH, LINKTEXT using Selenium's 'By' class
-2. Web Element Methods: click(), send_keys(), clear(), get_attribute(), is_displayed()
-3. Web Element Properties: text, tag_name, size, location
-4. Wait Types: Implicit Wait, Explicit Wait, Fluent Wait
-================================================================================
-"""
+
 
 import time
 from selenium import webdriver
@@ -18,9 +10,8 @@ from selenium.common.exceptions import NoSuchElementException, ElementNotInterac
 from webdriver_manager.chrome import ChromeDriverManager
 
 def run_locators_and_methods_demo():
-    print("\n========================================================")
-    print("  🚀 STARTING SELENIUM LOCATORS & WEB ELEMENTS DEMO")
-    print("========================================================")
+    print("STARTING SELENIUM LOCATORS & WEB ELEMENTS DEMO")
+
 
     # Setup Chrome Options
     options = webdriver.ChromeOptions()
@@ -41,9 +32,15 @@ def run_locators_and_methods_demo():
         print("✓ Implicit Wait configured: 10 seconds")
 
         # Open Wanderlux Application (Local or Production URL)
-        APP_URL = "http://localhost:5173"  # or your Vercel URL
+        APP_URL = "https://wanderlux-2-0.vercel.app"
         print(f"✓ Navigating to application: {APP_URL}")
-        driver.get(APP_URL)
+        try:
+            driver.get(APP_URL)
+        except Exception as conn_err:
+            print("\n❌ Could not connect to application!")
+            print(f"   Reason: {conn_err}")
+            print("\n💡 TIP: If running locally, start your dev server with: npm run dev")
+            return
 
         # ====================================================================
         # 1. FINDING ELEMENTS BY 'By' CLASS

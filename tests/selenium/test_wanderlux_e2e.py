@@ -11,7 +11,8 @@ from pages.home_page import HomePage
 from pages.login_modal_page import LoginModalPage
 from pages.results_page import SearchResultsPage
 
-BASE_URL = "http://localhost:5173"  # Change to your live Vercel URL if testing live!
+import os
+BASE_URL = os.environ.get("WANDERLUX_URL", "https://wanderlux-2-0.vercel.app")
 
 class TestWanderluxAutomation:
 
