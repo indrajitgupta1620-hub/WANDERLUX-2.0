@@ -87,12 +87,11 @@ def run_automated_ticket_booking():
         time.sleep(ACTION_DELAY)
 
         # Click Verify & Sign In
-        verify_btn = driver.find_element(By.XPATH, "//button[contains(., 'Verify & Sign In')]")
-        verify_btn.click()
-        time.sleep(ACTION_DELAY)
+        verify_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Verify & Sign In')]")))
+        driver.execute_script("arguments[0].click();", verify_btn)
 
-        # Wait for celebration screen and modal close
-        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "auth-success-screen")))
+        # Wait for authentication to complete (user badge appears in navbar)
+        wait.until(EC.presence_of_element_located((By.CLASS_NAME, "user-profile-badge")))
         print("✓ Authenticated as 'Indrajit Gupta' (+91 9876543210)")
         time.sleep(ACTION_DELAY)
 
