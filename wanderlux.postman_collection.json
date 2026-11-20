@@ -541,6 +541,147 @@
           ]
         }
       ]
+    },
+    {
+      "name": "7. Chaining Requests (Automated Workflow)",
+      "item": [
+        {
+          "name": "Chain Step 1: Verify OTP & Save Auth Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{testPhone}}\",\n  \"otp\": \"1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/verify-otp",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "verify-otp"]
+            },
+            "description": "Chaining Step 1: Authenticates user, extracts authToken from JSON response, and automatically saves it to Environment Variable 'authToken'."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Step 1: Auth succeeded with 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var json = pm.response.json();",
+                  "pm.expect(json.authToken).to.be.a('string');",
+                  "pm.environment.set(\"authToken\", json.authToken);",
+                  "console.log(\"[CHAIN 1] Stored authToken:\", json.authToken);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Chain Step 2: Create Booking & Save PNR",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"passengerName\": \"Indrajit Gupta (Chained Test)\",\n  \"passengerPhone\": \"{{testPhone}}\",\n  \"passengerEmail\": \"indrajit@wanderlux.com\",\n  \"type\": \"flight\",\n  \"itemId\": \"fl-101\",\n  \"seat\": \"16B\",\n  \"totalPrice\": 4850\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings"]
+            },
+            "description": "Chaining Step 2: Uses {{authToken}} in Authorization header, creates new booking, extracts new PNR code, and saves it into Environment Variable 'chainedPnr'."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Step 2: Booking created with 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var json = pm.response.json();",
+                  "pm.expect(json.booking.pnr).to.be.a('string');",
+                  "pm.environment.set(\"chainedPnr\", json.booking.pnr);",
+                  "console.log(\"[CHAIN 2] Stored chainedPnr:\", json.booking.pnr);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Chain Step 3: Fetch Booking Using Chained PNR",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{chainedPnr}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "{{chainedPnr}}"]
+            },
+            "description": "Chaining Step 3: Automatically queries the booking created in Step 2 using {{chainedPnr}} in the URL path."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Step 3: Fetched chained booking with 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var json = pm.response.json();",
+                  "var expectedPnr = pm.environment.get(\"chainedPnr\");",
+                  "pm.expect(json.data.pnr).to.eql(expectedPnr);",
+                  "console.log(\"[CHAIN 3] Verified PNR matches:\", json.data.pnr);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Chain Step 4: Cancel Booking Using Chained PNR",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{chainedPnr}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "{{chainedPnr}}"]
+            },
+            "description": "Chaining Step 4: Cancels the booking using {{chainedPnr}} and verifies refund initialization."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Step 4: Cancelled chained booking with 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var json = pm.response.json();",
+                  "pm.expect(json.refund.status).to.eql(\"INITIATED\");",
+                  "console.log(\"[CHAIN 4] Successfully cancelled PNR:\", pm.environment.get(\"chainedPnr\"));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }
