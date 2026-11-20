@@ -8,7 +8,22 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://localhost:5000",
+      "value": "https://wanderlux-2-0.vercel.app",
+      "type": "string"
+    },
+    {
+      "key": "testPhone",
+      "value": "9876543210",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "wl_jwt_demo_token",
+      "type": "string"
+    },
+    {
+      "key": "chainedPnr",
+      "value": "WL-100001",
       "type": "string"
     }
   ],
