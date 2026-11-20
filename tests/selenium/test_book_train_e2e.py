@@ -100,13 +100,13 @@ def run_automated_train_booking():
         time.sleep(ACTION_DELAY)
 
         try:
-            seat_btn = driver.find_element(By.XPATH, "//button[contains(text(), '14A') or contains(text(), '12A')]")
-            driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", seat_btn)
+            berth_btn = driver.find_element(By.XPATH, "//button[contains(., 'Lower Berth')]")
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", berth_btn)
             time.sleep(0.5)
-            seat_btn.click()
-            print("Window Berth selected: 14A")
+            driver.execute_script("arguments[0].click();", berth_btn)
+            print("Selected Berth Preference: Lower Berth (Window Side)")
         except:
-            print("Using default pre-selected berth")
+            print("Using default berth preference")
         time.sleep(ACTION_DELAY)
 
         print("Verified coupon WELCOMENEXT applied: -800 Train Discount")

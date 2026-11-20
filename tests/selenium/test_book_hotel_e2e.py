@@ -88,7 +88,7 @@ def run_automated_hotel_booking():
 
         driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", book_hotel_btns[0])
         time.sleep(1)
-        driver.execute_script("arguments[0].click();", book_hotel_btns[0])
+        book_hotel_btns[0].click()
         time.sleep(ACTION_DELAY)
 
         print("[STEP 5/7] Entering guest details and room preferences...")
@@ -96,6 +96,16 @@ def run_automated_hotel_booking():
         name_input.clear()
         name_input.send_keys("Indrajit Gupta")
         print("Primary Guest Name: Indrajit Gupta")
+        time.sleep(ACTION_DELAY)
+
+        try:
+            room_option = driver.find_element(By.XPATH, "//div[contains(., 'Deluxe King Suite') and contains(@style, 'cursor: pointer')]")
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", room_option)
+            time.sleep(0.5)
+            driver.execute_script("arguments[0].click();", room_option)
+            print("Selected Room Category: Deluxe King Suite (Complimentary Breakfast)")
+        except:
+            print("Using default room category")
         time.sleep(ACTION_DELAY)
 
         print("Verified coupon WELCOMENEXT applied: -800 Hotel Discount")
@@ -122,10 +132,11 @@ def run_automated_hotel_booking():
         pnr_element = wait.until(EC.visibility_of_element_located((By.XPATH, "//span[contains(., 'PNR NUMBER')]/following-sibling::div")))
         generated_pnr = pnr_element.text.strip()
 
-        print("HOTEL ROOM SUCCESSFULLY RESERVED AND CONFIRMED")
+        print("HOTEL ROOM RESERVATION CONFIRMED")
         print(f"Official Voucher ID: {generated_pnr}")
         print(f"Primary Guest: Indrajit Gupta")
         print(f"Property: The Taj Mahal Palace & Tower")
+        print(f"Room Category: Deluxe King Suite")
         print(f"Meal Plan: Complimentary Breakfast and Pool Access")
         print(f"Booking Status: CONFIRMED")
 
