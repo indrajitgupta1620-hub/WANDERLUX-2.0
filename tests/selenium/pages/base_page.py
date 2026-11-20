@@ -2,10 +2,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 class BasePage:
-    """
-    Base Page encapsulates common WebDriver interactions and explicit waits.
-    All Page Objects inherit from this class.
-    """
     def __init__(self, driver):
         self.driver = driver
         self.wait = WebDriverWait(driver, 10)

@@ -2,9 +2,6 @@ from selenium.webdriver.common.by import By
 from .base_page import BasePage
 
 class SearchResultsPage(BasePage):
-    """
-    Page Object for the Search Results list and booking triggers.
-    """
     RESULTS_CONTAINER = (By.CLASS_NAME, "search-results-page")
     PAGE_TITLE = (By.CLASS_NAME, "results-title")
     FLIGHT_CARDS = (By.CLASS_NAME, "flight-card-main")
